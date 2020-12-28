@@ -32,40 +32,41 @@ def scrape():
     article_text = content.find_all("div", class_='article_teaser_body')
     news_p = article_text[0].text
     news_p
-
+    #visting Nasa website
     url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
     browser.visit(url)
-
+    #finding the full image button path and click
     full_image = browser.find_by_id("full_image")
     full_image.click()
-    
+    #finding the more info button path and click
     more_info = browser.links.find_by_partial_text("more info")
     more_info.click()
 
     html = browser.html
     img_soup = bs(html, 'html.parser')
-
+    #assigning the url to a variable
     img_path = img_soup.select_one('figure.lede a img').get("src")
     img_path
 
     featured_img_url = f"https://www.jpl.nasa.gov{img_path}"
     featured_img_url
-
+    #Visiting Mars Facts webpage
     url_facts = 'https://space-facts.com/mars/'
     browser.visit(url_facts)
     html = browser.html
     soup = bs(html, 'html.parser')
-
+    #reading the table
     mars_facts_tables = pd.read_html(url_facts)
     df_facts_table = mars_facts_tables[0]
     df_facts_table.columns = ["Description", "Mars"]
-    mars_html_table = df_facts_table.to_html()
+    mars_html_table = df_facts_table.to_html(index=False)
     mars_html_table.replace('\n', '')
-
+    #Visiting astrogeology webpage
     url_facts = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
     browser.visit(url_facts)
     html = browser.html
     soup = bs(html, 'html.parser')
+    #finding the links
     large_photos = soup.find_all('div', class_='item')
 
     hemi_main_url = 'https://astrogeology.usgs.gov'
@@ -84,7 +85,7 @@ def scrape():
         hemi_ima_url.append({"title" : title, "img_url" : img_url})
     
     hemi_ima_url
-
+    #creating a dictionary
     mars_dict={
         "news_title_test": news_title,
         "news_p": news_p,
